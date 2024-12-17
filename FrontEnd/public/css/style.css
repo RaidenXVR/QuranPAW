@@ -1,0 +1,118 @@
+/* Styling untuk seluruh aplikasi */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;  /* Menambahkan jarak antar teks agar lebih nyaman dibaca */
+}
+
+/* Container utama */
+.App {
+    max-width: 1200px;  /* Membatasi lebar konten */
+    margin: 0 auto;  /* Memusatkan konten */
+    padding: 20px;
+    text-align: center;
+}
+
+/* Header */
+h1 {
+    color: #0f4c81;
+    margin-bottom: 20px;
+    font-size: 2rem;  /* Ukuran font lebih besar untuk heading utama */
+}
+
+/* Ayat-ayat Al-Quran */
+p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #555;  /* Sedikit lebih terang untuk teks biasa */
+}
+
+p a {
+    color: #0f4c81;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+p a:hover {
+    text-decoration: underline;
+    color: #08466d;  /* Hover dengan warna lebih gelap */
+}
+
+/* Form Login */
+input {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: calc(100% - 20px);  /* Menggunakan padding lebih baik untuk lebar input */
+    max-width: 300px;
+    box-sizing: border-box;  /* Agar padding tidak merubah lebar elemen */
+}
+
+input:focus {
+    border-color: #0f4c81;  /* Menambahkan efek fokus untuk input */
+    outline: none;  /* Menghilangkan outline default */
+}
+
+/* Tombol */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #0f4c81;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+    transition: background-color 0.3s ease;
+    width: auto;
+}
+
+button:hover {
+    background-color: #08466d;
+}
+
+/* Responsif: Menyesuaikan tampilan di perangkat dengan layar lebih kecil */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    input {
+        width: 100%;  /* Mengubah lebar input menjadi 100% pada layar kecil */
+    }
+
+    button {
+        width: 100%;  /* Mengubah lebar tombol menjadi 100% pada layar kecil */
+    }
+}
+
+/* Styling untuk Ayat dan Surah */
+ul {
+    list-style-type: none; /* Menghilangkan bullets pada list */
+    padding: 0;
+}
+
+li {
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+li h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+li p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
