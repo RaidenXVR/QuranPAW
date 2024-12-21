@@ -1,5 +1,5 @@
 {
-    "name": "Al-Quran PWA",
+    "name": "Qur'an Ku",
     "short_name": "Al-Quran",
     "start_url": "/",
     "display": "standalone",
@@ -7,12 +7,12 @@
     "theme_color": "#0d6efd",
     "icons": [
         {
-            "src": "/images/logo192.png",
+            "src": "/images/logoq.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/images/logo512.png",
+            "src": "/images/logoq.png",
             "sizes": "512x512",
             "type": "image/png"
         }

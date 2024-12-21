@@ -45,6 +45,21 @@ export const addBookmark = (verseKey, text, translation) => {
     }
 };
 
+export const deleteBookmark = (_id) => {
+    const token = getToken();
+
+    if (token) {
+        return axios.delete(API_URL + `/${_id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).catch((err) => {
+            console.error("Error deleting bookmark", err.message);
+            throw new Error('Gagal menghapus bookmark')
+        })
+    }
+}
+
 // Fungsi untuk login pengguna
 export const loginUser = (email, password) => {
     return axios.post(`${AUTH_URL}/login`, { email, password })
@@ -83,5 +98,5 @@ export const registerUser = (email, password) => {
 export const logoutUser = () => {
     localStorage.removeItem('token');  // Menghapus token dari localStorage
     // Redirect ke halaman login setelah logout
-    window.location.href = '/login';  
+    window.location.href = '/login';
 };

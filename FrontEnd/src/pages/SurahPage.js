@@ -1,37 +1,57 @@
 // src/pages/SurahPage.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import '../styles/Navbar.css';
+import { addBookmark, getBookmarks, deleteBookmark } from '../services/api';
 
-function SurahPage({ addBookmark }) {
-    const [currentSurah, setCurrentSurah] = useState(1);
+function SurahPage() {
+    const [currentSurah, setCurrentSurah] = useState("");
     const [surahVerses, setSurahVerses] = useState([]);
     const [surahAudio, setSurahAudio] = useState([]);
-    const [error, setError] = useState(null); // State untuk error
+    const [error, setError] = useState(null);
+    const [bookmarks, setBookmarks] = useState([]);
+    const { surahId } = useParams()
+
+    const navigate = useNavigate();
 
     // Fetch data untuk surah dan audio
     useEffect(() => {
-        axios.get(`https://api.quran.com/api/v4/quran/verses/indopak?chapter_number=${currentSurah}&per_page=7`)
-            .then(response => {
-                setSurahVerses(response.data.verses || []);
-            })
-            .catch(error => {
-                console.error('Error fetching verses:', error);
-                setError('Gagal mengambil data ayat.');
+        if (surahId === undefined) {
+            navigate("/");
+            return
+        }
+        fetch("/assets/quran_id.json")
+            .then((res) => {
+                if (res) {
+                    res.json().then((data) => {
+                        setCurrentSurah(data[surahId - 1].transliteration);
+                        setSurahVerses(data[surahId - 1].verses);
+                    })
+                }
+            }).catch((err) => {
+                console.log(err)
             });
+        getBookmarks().then((result) => {
+            setBookmarks(result.data);
+        }).catch((err) => {
+            console.log(err.message)
+        });
 
-        axios.get(`https://api.quran.com/api/v4/recitations/2/by_chapter/${currentSurah}?per_page=7`)
+        axios.get(`http://localhost:5000/api/get_audio/${surahId}?chapter_length=300`)
             .then(response => {
-                setSurahAudio(response.data.audio_files || []);
+                setSurahAudio(response.data.urls || []);
             })
             .catch(error => {
                 console.error('Error fetching audio:', error);
                 setError('Gagal mengambil data audio.');
             });
-    }, [currentSurah]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [surahId]);
 
     // Fungsi untuk memutar audio saat tombol diklik
     const playAudio = (audioUrl) => {
-        const fullAudioUrl = `https://verses.quran.com/${audioUrl}`;
+        const fullAudioUrl = audioUrl;
         const audio = new Audio(fullAudioUrl);
         audio.play()
             .then(() => {
@@ -44,32 +64,89 @@ function SurahPage({ addBookmark }) {
 
     // Fungsi untuk berpindah ke surah berikutnya
     const nextSurah = () => {
-        if (currentSurah < 114) {
-            setCurrentSurah(prevSurah => prevSurah + 1);
-        }
+        const nextSurahId = parseInt(surahId) + 1; // Calculate the next Surah ID
+        navigate(`/surah/${nextSurahId}`); // Navigate to the next Surah
     };
+
+    //TODO: Ini bedain ayat surat mana sama surat lain gimana?
+    const unbookmark = (verseKey) => {
+
+        const clickedUnbookmark = bookmarks.find(bookmark => bookmark.verseKey === verseKey);
+        if (clickedUnbookmark) {
+            deleteBookmark(clickedUnbookmark._id).then(() => {
+                setBookmarks(bookmarks.filter(bookmark => bookmark.verseKey !== verseKey));
+            }
+            ).catch((error) => {
+                console.error(clickedUnbookmark._id);
+                console.error('Error deleting bookmark:', error);
+            });
+        }
+
+    }
+
+    const addToBookmark = (verseId, text, translation) => {
+        const verseKey = `${surahId}:${verseId}`;
+        addBookmark(verseKey, text, translation)
+            .then(() => {
+                getBookmarks().then((result) => {
+                    setBookmarks(result.data);
+                }).catch((err) => {
+                    console.log(err.message);
+                })
+                // console.log('Bookmark added successfully');
+            })
+            .catch((error) => {
+                console.error('Error adding bookmark:', error);
+            });
+    }
+
 
     return (
         <div>
+            <header>
+                <nav className="navbar">
+                    {/* Logo dan Nama Aplikasi di Kiri */}
+                    <div className="navbar-brand" onClick={() => navigate("/")}>
+                        <img id='logo' src="/images/logoq.png" alt="Al-Quran PWA Logo" className="logo" />
+                        Qur'an ku</div>
+                    <ul className="navbar-actions">
+                        <li>
+                            <a href="/" className="nav-link">Home</a>
+                        </li>
+                        <li>
+                            <button onClick={() => console.log(bookmarks)} className='nav-button'>Debug</button>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
             <h2>Surah {currentSurah}</h2>
             {error && <p style={{ color: 'red' }}>{error}</p>} {/* Tampilkan error jika ada */}
             {surahVerses.map((verse, index) => (
-                <div key={verse.id} style={{ marginBottom: '20px' }}>
-                    <p><strong>{verse.verse_key}:</strong> {verse.text_indopak}</p>
-                    {verse.translation && <p><em>Terjemahan: {verse.translation}</em></p>}
+                <div className='kanan' key={verse.id} style={{ marginBottom: '20px' }}>
+                    <p><strong >{verse.id}:</strong> {verse.text}</p>
+                    {verse.translation && <p><em>{verse.translation}</em></p>}
                     {/* Tombol Play Audio */}
-                    <button onClick={() => playAudio(surahAudio[index]?.url)}>
+                    <button id='lala' onClick={() => playAudio(surahAudio[index])}>
                         Play Audio
                     </button>
                     {/* Tombol Bookmark */}
-                    <button onClick={() => addBookmark(verse.verse_key, verse.text_indopak, verse.translation, `Surah ${currentSurah}`)}>
-                        Bookmark
+                    <button id='lala' onClick={() => {
+                        if (bookmarks.some(bookmark => bookmark.verseKey === `${surahId}:${verse.id}`)) {
+                            unbookmark(`${surahId}:${verse.id}`);
+                            console.log('Bookmark removed');
+
+                        } else {
+                            addToBookmark(verse.id, verse.text, verse.translation);
+                            console.log('Bookmark added');
+                        }
+                    }}>
+                        {bookmarks.some(bookmark => bookmark.verseKey === `${surahId}:${verse.id}`) ? "Unbookmark" : "Bookmark"}
                     </button>
                 </div>
             ))}
-            
+
             {/* Tombol Next Surah */}
-            <button onClick={nextSurah}>Next Surah</button>
+            <button id='lala' hidden={surahId == 114} onClick={nextSurah}>Next Surah</button>
         </div>
     );
 }

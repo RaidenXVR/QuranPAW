@@ -8,7 +8,8 @@ const urlsToCache = [
     "/css/style.css",
     "/images/logo192.png",
     "/images/logo512.png",
-    "/src/App.js"
+    "/src/App.js",
+    "/assets/quran_id.json",
 ];
 
 // Install Service Worker
@@ -41,10 +42,10 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener('fetch', event => {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return new Response('Network error occurred', {
-          status: 500
-        });
-      })
+        fetch(event.request).catch(() => {
+            return new Response('Network error occurred', {
+                status: 500
+            });
+        })
     );
-  });
+});

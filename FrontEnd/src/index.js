@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './styles/App.css';
 import { BrowserRouter } from 'react-router-dom'; // Pastikan ini ada di sini
 import App from './App';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -12,3 +13,5 @@ root.render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+serviceWorkerRegistration.register();

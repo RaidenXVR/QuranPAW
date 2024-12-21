@@ -18,9 +18,9 @@ body {
 
 /* Header */
 h1 {
-    color: #0f4c81;
-    margin-bottom: 20px;
-    font-size: 2rem;  /* Ukuran font lebih besar untuk heading utama */
+    color: #ffffff;
+    
+    font-size: 1rem;  /* Ukuran font lebih besar untuk heading utama */
 }
 
 /* Ayat-ayat Al-Quran */
@@ -31,7 +31,7 @@ p {
 }
 
 p a {
-    color: #0f4c81;
+    color: #fbfbfb;
     text-decoration: none;
     font-weight: bold;
 }
@@ -59,22 +59,8 @@ input:focus {
 }
 
 /* Tombol */
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #0f4c81;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 10px 0;
-    transition: background-color 0.3s ease;
-    width: auto;
-}
 
-button:hover {
-    background-color: #08466d;
-}
+
 
 /* Responsif: Menyesuaikan tampilan di perangkat dengan layar lebih kecil */
 @media (max-width: 768px) {
@@ -98,9 +84,9 @@ ul {
 }
 
 li {
-    background-color: #fff;
-    margin: 10px 0;
-    padding: 15px;
+    background-color: #5A6C57;
+
+    padding: 5px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -112,7 +98,7 @@ li h3 {
 }
 
 li p {
-    margin: 5px 0;
+    margin:  0;
     font-size: 14px;
     color: #666;
 }

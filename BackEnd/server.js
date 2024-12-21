@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const axios = require('axios');
 
 const app = express();
 const PORT = 5000;
@@ -187,6 +188,33 @@ app.delete('/api/bookmarks/:id', authenticate, async (req, res) => {
     res.status(500).json({ message: 'Failed to delete bookmark' });
   }
 });
+
+app.get('/api/get_audio/:chapter_id/', async (req, res) => {
+  const { chapter_id } = req.params;
+  const { chapter_length } = req.query;
+  // const { reciter_id } = req.body;
+  const base_url = "https://verses.quran.com/";
+  const urls = [];
+
+  await axios.get(`https://api.quran.com/api/v4/recitations/2/by_chapter/${chapter_id}?per_page=${chapter_length}`)
+    .then((result) => {
+      var verses = result.data.audio_files;
+      verses.forEach((audio_file) => {
+        urls.push(base_url + audio_file.url);
+
+      })
+      return res.status(200).send({ "urls": urls })
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(400).send({ "message": "Something is wrong with the request" });
+    });
+
+
+
+
+
+})
 
 
 // Pastikan server berjalan pada port 5000
