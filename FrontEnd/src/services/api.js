@@ -8,6 +8,11 @@ const getToken = () => {
     return localStorage.getItem('token');
 };
 
+export var isAuthenticatedApi = false;
+export const setIsAuthenticatedApi = (value) => {
+    isAuthenticatedApi = value;
+};
+
 export const getBookmarks = () => {
     const token = localStorage.getItem('token');  // Mengambil token dari localStorage
 
@@ -61,37 +66,36 @@ export const deleteBookmark = (_id) => {
 }
 
 // Fungsi untuk login pengguna
-export const loginUser = (email, password) => {
-    return axios.post(`${AUTH_URL}/login`, { email, password })
-        .then(response => {
-            // Menyimpan token ke localStorage jika login berhasil
-            localStorage.setItem('token', response.data.token);
-            return response.data;  // Mengembalikan response yang berisi token
-        })
-        .catch(error => {
-            // Menangani error saat login gagal
-            console.error('Login failed:', error);
-            throw new Error(error.response ? error.response.data.message : 'Login failed');
-        });
+export const loginUser = async (email, password) => {
+    try {
+        const response = await axios.post(`${AUTH_URL}/login`, { email, password });
+        // Menyimpan token ke localStorage jika login berhasil
+        localStorage.setItem('token', response.data.token);
+        isAuthenticated = true;
+        return response.data;
+    } catch (error) {
+        // Menangani error saat login gagal
+        console.error('Login failed:', error);
+        throw new Error(error.response ? error.response.data.message : 'Login failed');
+    }
 };
 
 // Fungsi untuk registrasi pengguna
-export const registerUser = (email, password) => {
-    return axios.post(`${AUTH_URL}/register`, { email, password })
-        .then(response => {
-            return response.data;  // Mengembalikan data dari server setelah registrasi berhasil
-        })
-        .catch(error => {
-            // Menangani error saat registrasi gagal
-            console.error('Registration failed:', error);
-            if (error.response) {
-                throw new Error(error.response.data.message || 'Terjadi kesalahan saat registrasi');
-            } else if (error.request) {
-                throw new Error('Tidak ada respons dari server');
-            } else {
-                throw new Error('Terjadi kesalahan dalam proses registrasi');
-            }
-        });
+export const registerUser = async (email, password) => {
+    try {
+        const response = await axios.post(`${AUTH_URL}/register`, { email, password });
+        return response.data;
+    } catch (error) {
+        // Menangani error saat registrasi gagal
+        console.error('Registration failed:', error);
+        if (error.response) {
+            throw new Error(error.response.data.message || 'Terjadi kesalahan saat registrasi');
+        } else if (error.request) {
+            throw new Error('Tidak ada respons dari server');
+        } else {
+            throw new Error('Terjadi kesalahan dalam proses registrasi');
+        }
+    }
 };
 
 // Fungsi untuk logout pengguna
@@ -99,4 +103,5 @@ export const logoutUser = () => {
     localStorage.removeItem('token');  // Menghapus token dari localStorage
     // Redirect ke halaman login setelah logout
     window.location.href = '/login';
+    isAuthenticated = false;
 };

@@ -1,0 +1,84 @@
+
+.login-container {
+    display: flex;
+    justify-content: center;
+
+}
+
+.login-form {
+    background: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    justify-content: center;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    font-size: 1rem;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+    border-color: #4b5945; 
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #4b5945; 
+    color: #fff;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #6D7F7B; 
+    transform: scale(1.05); 
+}
+
+.submit-btn:active {
+    background-color: #4b5945; 
+}
+
+input[type="email"], input[type="password"] {
+    box-sizing: border-box;
+}
+
+/* Responsif untuk tampilan mobile */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 20px;
+    }
+    .login-form {
+        width: 90%;
+    }
+}

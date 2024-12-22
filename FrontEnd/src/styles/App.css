@@ -40,7 +40,9 @@ p {
 }
 
 
-
+p em {
+    font-size: 1.2rem;
+}
 
 p a {
     color: #0f4c81;
@@ -108,6 +110,7 @@ button:hover {
     gap: 16px;
     padding: 20px;
     background-color: #f9f9f9;
+    border-radius: 20px;
 }
 
 .surah-item {

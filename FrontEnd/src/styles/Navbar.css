@@ -1,88 +1,231 @@
-/* Styling untuk Navbar */
+/* Navbar */
 header {
-  background-color: #fefefe;
-  padding: 10px 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin: 0;
-  width: 100%; /* Memastikan navbar mengisi lebar layar */
-  position: fixed; /* Menjaga navbar tetap di atas saat scroll */
+  background: linear-gradient(90deg, rgba(47, 56, 53, 1) 0%, rgba(78, 108, 101, 1) 100%);
+  padding: 15px 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 1000; /* Agar navbar berada di atas konten lainnya */
+  z-index: 1000;
+  border-bottom: 2px solid #ddd;
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right:  10px;
-  margin: 0 auto; /* Memusatkan navbar */
-  
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .navbar-brand {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: bold;
-  color: #333;
+  color: #fff;
+  display: flex; 
+  align-items: center;
+  white-space: nowrap;
 }
 
-.navbar-menu {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
+.navbar-brand .logo {
+  width: 50px;
+  margin-right: 10px;
 }
 
-.navbar-menu li {
-  list-style: none;
-
+.navbar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 2000;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
+.navbar-toggle.open {
+  transform: rotate(45deg);
+  opacity: 0.7;
+}
 
-#logo{
-  width: 50px; /* Sesuaikan ukuran logo */
-  margin: -10px;
-  margin-bottom: -15px;
-  padding-right: 10px;
-  padding-left: 10px;
- 
+.navbar-toggle .toggle-bar {
+  display: block;
+  width: 30px;
+  height: 4px;
+  background-color: #fff;
+  margin: 6px auto;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
 
+.navbar-toggle.open .toggle-bar:nth-child(1) {
+  transform: translateY(10px) rotate(45deg);
+}
+
+.navbar-toggle.open .toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar-toggle.open .toggle-bar:nth-child(3) {
+  transform: translateY(-10px) rotate(-45deg);
 }
 
 .navbar-actions {
   display: flex;
   padding: 0;
   margin: 0;
+  list-style: none;
 }
 
 .navbar-actions li {
-  list-style: none;
-  margin: 0 5px;
+  margin-left: 20px;
 }
 
-.nav-link {
-  text-decoration: none;
-  color: hsl(0, 0%, 100%);
-  
+a.nav-link {
+  text-decoration: none; /* Pastikan garis bawah hilang */
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 5px;
   font-size: 1rem;
-  transition: color 0.3s ease;
+ 
+  display: inline-block; /* Stabilkan posisi elemen */
+  transition: all 0.3s ease;
+  background: none;
+  text-align: center;
+  margin: 0; /* Hapus margin yang tidak diperlukan */
 }
+
 
 .nav-link:hover {
-  color: #0056b3;
+
+  color: #4b5945;
+  transform: scale(1.05);
 }
 
 .nav-button {
   background: none;
   border: none;
-  color: #ffffff;
+  color: #fff;
   cursor: pointer;
-  font-weight: bold;
   font-size: 1rem;
-  transition: color 0.3s ease;
+  padding: 8px 16px; /* Pastikan padding sama dengan .nav-link */
+  line-height: 1.5; /* Samakan line-height dengan .nav-link */
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  margin: 0; /* Pastikan tidak ada margin tambahan */
 }
 
+
 .nav-button:hover {
-  color: #b52e31;
+background-color:rgba(0, 0, 0, 0);
+  color: #4b5945;
+  transform: scale(1.05);
+
+}
+
+@media (max-width: 768px) {
+  .navbar-actions {
+    display: none; /* Tetap tersembunyi secara default */
+    flex-direction: column; /* Elemen vertikal */
+    width: 100%; /* Lebar proporsional */
+    max-width: 300px; /* Batasi lebar maksimum */
+    text-align: center;
+    margin: 0 auto; /* Pusatkan dropdown secara horizontal */
+    position: absolute;
+    top: 60px; /* Tepat di bawah navbar */
+    left: 50%; /* Atur dari tengah */
+    transform: translateX(-50%); /* Pusatkan secara horizontal */
+    z-index: 1000;
+    background-color: #5A6C57; /* Warna latar belakang */
+    border-radius: 10px; /* Sudut melengkung */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Tambahkan bayangan */
+    opacity: 0; /* Awalnya tidak terlihat */
+    pointer-events: none; /* Nonaktifkan interaksi */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border: 1px solid;
+  }
+
+  .navbar-actions.active {
+    display: flex; /* Tampilkan dropdown */
+    opacity: 1; /* Jadikan terlihat */
+    pointer-events: auto; /* Aktifkan klik */
+    transform: translateX(-50%) translateY(0); /* Reset posisi */
+  }
+
+  .navbar-toggle {
+    display: block; /* Tampilkan tombol toggle */
+    cursor: pointer;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: white;
+  }
+
+  
+
+  .nav-link {
+    display: block; /* Pastikan elemen mengambil satu baris penuh */
+    width: calc(100% - 40px); /* Sesuaikan lebar */
+    margin: 5px 0; /* Jarak vertikal antar elemen */
+    padding: 10px 20px 10px 10px; /* Kurangi padding kiri untuk menggeser */
+    font-size: 1rem; /* Ukuran font */
+    color: white;
+    text-decoration: none; /* Hapus garis bawah */
+    background-color: #5A6C57; /* Warna latar belakang */
+    border-radius: 5px; /* Membuat sudut tombol melengkung */
+    text-align: left; /* Rata kiri teks */
+    border: 1px solid white; /* Tambahkan garis tepi */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #4b5945; /* Warna latar belakang saat hover */
+    transform: scale(1.05); /* Sedikit membesar saat hover */
+}
+
+
+
+  .nav-button {
+    display: block; /* Setiap elemen pada baris baru */
+    width: 100%; /* Lebarkan elemen */
+    margin: 5px 0; /* Jarak antar elemen */
+    padding: 12px; /* Tambahkan padding agar sama */
+    font-size: 1rem; /* Ukuran font */
+    color: white;
+    text-align: center; /* Rata tengah teks */
+    background-color: #4b5945; /* Warna latar belakang */
+    border-radius: 5px; /* Tombol melengkung */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    border: 2px solid white; /* Tambahkan batas */
+  }
+
+  .nav-button:hover {
+    background-color: #5A6C57; /* Warna saat hover */
+    transform: scale(1.05); /* Sedikit membesar saat hover */
+  }
+
+
+
+
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  /* Tulisan Error merah */
+  p[style*="color: red"] {
+    font-size: 1rem;
+    margin: 10px;
+  }
+
+  #lala {
+    font-size: 1rem;
+    padding: 8px 12px;
+    width: 115px;
+    height: 50px;
+  }
+
+  .kanan p {
+    font-size: 1.2rem;
+  }
+
 }

@@ -1,9 +1,10 @@
 // src/pages/SurahPage.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/Navbar.css';
 import { addBookmark, getBookmarks, deleteBookmark } from '../services/api';
+import { AuthContext } from '../context/AuthContext';
 
 function SurahPage() {
     const [currentSurah, setCurrentSurah] = useState("");
@@ -11,12 +12,17 @@ function SurahPage() {
     const [surahAudio, setSurahAudio] = useState([]);
     const [error, setError] = useState(null);
     const [bookmarks, setBookmarks] = useState([]);
+    const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
     const { surahId } = useParams()
 
     const navigate = useNavigate();
 
     // Fetch data untuk surah dan audio
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsAuthenticated(true);
+        }
         if (surahId === undefined) {
             navigate("/");
             return
@@ -47,7 +53,7 @@ function SurahPage() {
                 setError('Gagal mengambil data audio.');
             });
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [surahId]);
+    }, [surahId, isAuthenticated]);
 
     // Fungsi untuk memutar audio saat tombol diklik
     const playAudio = (audioUrl) => {
@@ -103,34 +109,18 @@ function SurahPage() {
 
     return (
         <div>
-            <header>
-                <nav className="navbar">
-                    {/* Logo dan Nama Aplikasi di Kiri */}
-                    <div className="navbar-brand" onClick={() => navigate("/")}>
-                        <img id='logo' src="/images/logoq.png" alt="Al-Quran PWA Logo" className="logo" />
-                        Qur'an ku</div>
-                    <ul className="navbar-actions">
-                        <li>
-                            <a href="/" className="nav-link">Home</a>
-                        </li>
-                        <li>
-                            <button onClick={() => console.log(bookmarks)} className='nav-button'>Debug</button>
-                        </li>
-                    </ul>
-                </nav>
-            </header>
             <h2>Surah {currentSurah}</h2>
             {error && <p style={{ color: 'red' }}>{error}</p>} {/* Tampilkan error jika ada */}
             {surahVerses.map((verse, index) => (
                 <div className='kanan' key={verse.id} style={{ marginBottom: '20px' }}>
                     <p><strong >{verse.id}:</strong> {verse.text}</p>
-                    {verse.translation && <p><em>{verse.translation}</em></p>}
+                    {verse.translation && <p><em id='translet'>{verse.translation}</em></p>}
                     {/* Tombol Play Audio */}
                     <button id='lala' onClick={() => playAudio(surahAudio[index])}>
                         Play Audio
                     </button>
                     {/* Tombol Bookmark */}
-                    <button id='lala' onClick={() => {
+                    <button hidden={!isAuthenticated} id='lala' onClick={() => {
                         if (bookmarks.some(bookmark => bookmark.verseKey === `${surahId}:${verse.id}`)) {
                             unbookmark(`${surahId}:${verse.id}`);
                             console.log('Bookmark removed');

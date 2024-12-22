@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useContext } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import './styles/Navbar.css'; // Import CSS terpisah
 
@@ -10,19 +9,26 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SurahList from './pages/SurahList';
 import { getBookmarks } from './services/api';
+import { AuthContext } from './context/AuthContext';
 
 function App() {
   const [error, setError] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
   const [surahList, setSurahList] = useState([]);
+  const [isOpen, setIsOpen] = useState(false); // State untuk toggle navbar
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
 
   const logoutUser = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
+    setIsAuthenticated(false);
   };
 
   useEffect(() => {
+    if (localStorage.getItem('token')) {
+      setIsAuthenticated(true);
+    }
     fetch("/assets/quran_id.json")
       .then((res) => {
         res.json().then((result) => {
@@ -35,49 +41,36 @@ function App() {
     getBookmarks()
       .then((response) => setBookmarks(response.data))
       .catch(() => setError('Terjadi kesalahan saat mengambil daftar bookmark.'));
-  }, []);
+
+  }, [isAuthenticated]);
+
   return (
     <div className="App">
       {/* Navbar */}
       <header>
         <nav className="navbar">
-          {/* Logo dan Nama Aplikasi di Kiri */}
-
           <div className="navbar-brand">
-            <img id='logo' src="/images/logoq.png" alt="Al-Quran PWA Logo" className="logo" />
-            Qur'an ku</div>
+            <img id='logo' src="/images/logoq.png" alt="Logo" className="logo" />
+            <span>Qur'an ku</span>
+          </div>
 
+          {/* Toggle Button */}
+          <button className={`navbar-toggle ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(!isOpen)}>
+            <span className="toggle-bar"></span>
+            <span className="toggle-bar"></span>
+            <span className="toggle-bar"></span>
+          </button>
 
-
-
-          {/* Login/Register/Logout di Kanan */}
-          <ul className="navbar-actions">
-            <li>
-              <a href="/" className="nav-link">Home</a>
-            </li>
-            <li>
-              <a href="/login" className="nav-link">Login</a>
-            </li>
-            <li>
-              <a href="/register" className="nav-link">Register</a>
-            </li>
-            <li>
-              <button onClick={logoutUser} className="nav-button">Logout</button>
-            </li>
-            <li>
-              <button onClick={() => console.log(surahList)} className='nav-button'>Debug</button>
-            </li>
+          {/* Navbar Links */}
+          <ul className={`navbar-actions ${isOpen ? 'active' : ''}`}>
+            <li><Link to="/" className="nav-link">Home</Link></li>
+            <li hidden={isAuthenticated}><Link to="/bookmark" className="nav-link">Bookmark</Link></li>
+            <li hidden={isAuthenticated}><Link to="/login" className="nav-link">Login</Link></li>
+            <li hidden={isAuthenticated}><Link to="/register" className="nav-link">Register</Link></li>
+            <li hidden={!isAuthenticated}><button onClick={logoutUser} className="nav-button">Logout</button></li>
           </ul>
         </nav>
       </header>
-
-
-
-
-
-
-
-
 
       {/* Main Content */}
       <main>
@@ -94,5 +87,3 @@ function App() {
 }
 
 export default App;
-
-
