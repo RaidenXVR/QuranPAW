@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { BookmarkContext } from '../context/BookmarkContext';
 
-const BookmarkList = ({ bookmarks }) => {
-  const [bookmarksData, setBookmarksData] = useState([]);
+const BookmarkList = () => {
+  // const [bookmarkList, setBookmarkList] = useState([]);
+  const { bookmarkList, setBookmarkList } = useContext(BookmarkContext);
   const [error, setError] = useState(null);
   const [audioFiles, setAudioFiles] = useState([]);
+  const [chapterNames, setChapterNames] = useState({});
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -16,9 +19,10 @@ const BookmarkList = ({ bookmarks }) => {
         })
         .then((response) => {
           console.log('Fetched bookmarks:', response.data); // Memeriksa data API
-          setBookmarksData(response.data);  // Menyimpan data ke state
+          setBookmarkList(response.data);  // Menyimpan data ke state
           // Simpan data ke localStorage
-          localStorage.setItem('bookmarksData', JSON.stringify(response.data));
+          console.log(bookmarkList)
+          localStorage.setItem('bookmarkList', JSON.stringify(response.data));
         })
         .catch((error) => {
           if (error.response && error.response.status === 403) {
@@ -31,9 +35,10 @@ const BookmarkList = ({ bookmarks }) => {
 
       // Ambil data audio
       axios
-        .get('https://api.quran.com/api/v4/recitations/2/by_chapter/1?per_page=7')
+        .post('http://localhost:5000/api/audio_files', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
         .then((response) => {
-          setAudioFiles(response.data.audio_files || []);
+          const af = response.data.urls || [];
+          setAudioFiles(af);
         })
         .catch((error) => {
           console.error('Error fetching audio files:', error);
@@ -51,12 +56,12 @@ const BookmarkList = ({ bookmarks }) => {
 
   // Fungsi untuk menghapus bookmark
   const handleUnbookmark = (_id) => {
-    const updatedBookmarks = bookmarksData.filter((bookmark) => bookmark._id !== _id);
-    console.log(bookmarksData)
+    const updatedBookmarks = bookmarkList.filter((bookmark) => bookmark._id !== _id);
+    console.log(bookmarkList)
     console.log(_id)
-    setBookmarksData(updatedBookmarks);  // Update state dengan data yang sudah diperbarui
+    setBookmarkList(updatedBookmarks);  // Update state dengan data yang sudah diperbarui
     // Simpan perubahan ke localStorage
-    localStorage.setItem('bookmarksData', JSON.stringify(updatedBookmarks));
+    localStorage.setItem('bookmarkList', JSON.stringify(updatedBookmarks));
     // Bisa juga mengirimkan request ke API untuk menghapus bookmark di backend
     axios
       .delete(`http://localhost:5000/api/bookmarks/${_id}`, {
@@ -72,42 +77,102 @@ const BookmarkList = ({ bookmarks }) => {
       });
   };
 
+  const getChapterNameAndVerse = async (verseKey) => {
+    const [chapter, verse] = verseKey.split(':');
+    try {
+      const res = await fetch("/assets/quran_id.json");
+      const result = await res.json();
+      return `Surah ${result[chapter - 1].transliteration}, Ayat ${verse}`;
+    } catch (err) {
+      console.error(err);
+      return undefined;
+    }
+  }
+
+  const updateAudioFiles = async () => {
+    await axios
+      .post('http://localhost:5000/api/audio_files', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
+      .then((response) => {
+        const af = response.data.urls || [];
+        setAudioFiles(af);
+      })
+      .catch((error) => {
+        console.error('Error fetching audio files:', error);
+      });
+  }
+
+  const playAudio = (verseKey) => {
+    if (audioFiles.length !== bookmarkList.length || audioFiles.find((audio) => audio.verse_key === verseKey) === undefined) {
+      updateAudioFiles();
+    }
+    const audioUrl = audioFiles.find((audio) => audio.verse_key === verseKey)?.audio_url;
+    console.log('Playing audio:', audioUrl);
+    console.log(audioFiles);
+    const fullAudioUrl = audioUrl;
+    const audio = new Audio(fullAudioUrl);
+    audio.play()
+      .then(() => {
+        console.log('Audio playing');
+      })
+      .catch((error) => {
+        console.error('Error playing audio:', error);
+      });
+  };
   // Mengambil data bookmark dari localStorage saat komponen pertama kali di-render
   useEffect(() => {
-    const storedBookmarks = localStorage.getItem('bookmarksData');
+    const storedBookmarks = localStorage.getItem('bookmarkList');
     if (storedBookmarks) {
-      setBookmarksData(JSON.parse(storedBookmarks));
+      setBookmarkList(JSON.parse(storedBookmarks));
     }
   }, []);
+
+  useEffect(() => {
+    const fetchChapterNames = async () => {
+      const names = {};
+      for (const bookmark of bookmarkList) {
+        const chapterName = await getChapterNameAndVerse(bookmark.verseKey);
+        names[bookmark.verseKey] = chapterName;
+      }
+      setChapterNames(names);
+    };
+
+    fetchChapterNames();
+    updateAudioFiles();
+  }, [bookmarkList]);
 
   return (
     <div>
       <h2>Daftar Bookmark</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {bookmarksData.length === 0 ? (
+      {bookmarkList.length === 0 ? (
         <p>Tidak ada bookmark.</p>
       ) : (
         <ul>
-          {bookmarksData.map((bookmark, index) => {
+          {bookmarkList.map((bookmark, index) => {
             const audioUrl = getAudioUrlForBookmark(bookmark.verseKey);
-
+            const chapterName = chapterNames[bookmark.verseKey];
             // Gabungkan verseKey dan index untuk memastikan key unik
             const uniqueKey = `${bookmark.verseKey}-${index}`;
 
             return (
               <li key={uniqueKey}>
-                <strong>{bookmark.verseKey || 'Nama Surah Tidak Tersedia'}</strong> -
+                <strong>{chapterName || 'Nama Surah Tidak Tersedia'}</strong> -
                 {bookmark.text || 'Teks Ayat Tidak Tersedia'}
 
                 {/* Menambahkan elemen audio jika ada */}
-                {audioUrl && (
-                  <div>
-                    <audio controls>
-                      <source src={audioUrl} type="audio/mpeg" />
-                      Your browser does not support the audio element.
-                    </audio>
-                  </div>
-                )}
+                <button id='lala' onClick={() => playAudio(bookmark.verseKey)}
+                  style={{
+                    marginTop: '10px',
+                    padding: '5px 10px',
+                    backgroundColor: '#f44336',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    backgroundColor: '#4CAF50',
+                  }}>
+                  Play Audio
+                </button>
 
                 {/* Tombol Unbookmark */}
                 <button

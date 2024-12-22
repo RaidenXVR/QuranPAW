@@ -192,7 +192,6 @@ app.delete('/api/bookmarks/:id', authenticate, async (req, res) => {
 app.get('/api/get_audio/:chapter_id/', async (req, res) => {
   const { chapter_id } = req.params;
   const { chapter_length } = req.query;
-  // const { reciter_id } = req.body;
   const base_url = "https://verses.quran.com/";
   const urls = [];
 
@@ -209,13 +208,31 @@ app.get('/api/get_audio/:chapter_id/', async (req, res) => {
       console.log(err);
       return res.status(400).send({ "message": "Something is wrong with the request" });
     });
-
-
-
-
-
 })
 
+
+app.post('/api/audio_files/', async (req, res) => {
+  const { verse_keys } = req.body;
+  const base_url = "https://verses.quran.com/";
+  const urls = [];
+
+  verse_keys.forEach(async (verseKey) => {
+
+    await axios.get(`https://api.quran.com/api/v4/quran/recitations/2?verse_key=${verseKey}`)
+      .then((result) => {
+        var audio_file = result.data.audio_files[0];
+        urls.push({ "verse_key": verseKey, "audio_url": base_url + audio_file.url });
+
+        if (urls.length === verse_keys.length) {
+          return res.status(200).send({ "urls": urls })
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).send({ "message": "Something is wrong with the request" });
+      });
+  })
+})
 
 // Pastikan server berjalan pada port 5000
 app.listen(5000, () => {

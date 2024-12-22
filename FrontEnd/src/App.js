@@ -10,10 +10,11 @@ import RegisterPage from './pages/RegisterPage';
 import SurahList from './pages/SurahList';
 import { getBookmarks } from './services/api';
 import { AuthContext } from './context/AuthContext';
+import { BookmarkContext } from './context/BookmarkContext';
 
 function App() {
   const [error, setError] = useState(null);
-  const [bookmarks, setBookmarks] = useState([]);
+  const { bookmarksList, setBookmarksList } = useContext(BookmarkContext);
   const [surahList, setSurahList] = useState([]);
   const [isOpen, setIsOpen] = useState(false); // State untuk toggle navbar
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -39,7 +40,7 @@ function App() {
       })
 
     getBookmarks()
-      .then((response) => setBookmarks(response.data))
+      .then((response) => setBookmarksList(response.data))
       .catch(() => setError('Terjadi kesalahan saat mengambil daftar bookmark.'));
 
   }, [isAuthenticated]);
@@ -64,7 +65,7 @@ function App() {
           {/* Navbar Links */}
           <ul className={`navbar-actions ${isOpen ? 'active' : ''}`}>
             <li><Link to="/" className="nav-link">Home</Link></li>
-            <li hidden={isAuthenticated}><Link to="/bookmark" className="nav-link">Bookmark</Link></li>
+            <li hidden={!isAuthenticated}><Link to="/bookmarks" className="nav-link">Bookmark</Link></li>
             <li hidden={isAuthenticated}><Link to="/login" className="nav-link">Login</Link></li>
             <li hidden={isAuthenticated}><Link to="/register" className="nav-link">Register</Link></li>
             <li hidden={!isAuthenticated}><button onClick={logoutUser} className="nav-button">Logout</button></li>
@@ -77,7 +78,7 @@ function App() {
         <Routes>
           <Route path='/' element={<SurahList surahs={surahList} />} />
           <Route path="/surah/:surahId" element={<SurahPage />} />
-          <Route path="/bookmarks" element={<BookmarkPage bookmarks={bookmarks} />} />
+          <Route path="/bookmarks" element={<BookmarkPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>
