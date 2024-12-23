@@ -5,13 +5,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/Navbar.css';
 import { addBookmark, getBookmarks, deleteBookmark } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
+import { BookmarkContext } from '../context/BookmarkContext';
 
 function SurahPage() {
     const [currentSurah, setCurrentSurah] = useState("");
     const [surahVerses, setSurahVerses] = useState([]);
     const [surahAudio, setSurahAudio] = useState([]);
     const [error, setError] = useState(null);
-    const [bookmarks, setBookmarks] = useState([]);
+    const { bookmarkList, setBookmarkList } = useContext(BookmarkContext);
     const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
     const { surahId } = useParams()
 
@@ -39,7 +40,7 @@ function SurahPage() {
                 console.log(err)
             });
         getBookmarks().then((result) => {
-            setBookmarks(result.data);
+            setBookmarkList(result.data);
         }).catch((err) => {
             console.log(err.message)
         });
@@ -77,10 +78,10 @@ function SurahPage() {
     //TODO: Ini bedain ayat surat mana sama surat lain gimana?
     const unbookmark = (verseKey) => {
 
-        const clickedUnbookmark = bookmarks.find(bookmark => bookmark.verseKey === verseKey);
+        const clickedUnbookmark = bookmarkList.find(bookmark => bookmark.verseKey === verseKey);
         if (clickedUnbookmark) {
             deleteBookmark(clickedUnbookmark._id).then(() => {
-                setBookmarks(bookmarks.filter(bookmark => bookmark.verseKey !== verseKey));
+                setBookmarkList(bookmarkList.filter(bookmark => bookmark.verseKey !== verseKey));
             }
             ).catch((error) => {
                 console.error(clickedUnbookmark._id);
@@ -95,7 +96,7 @@ function SurahPage() {
         addBookmark(verseKey, text, translation)
             .then(() => {
                 getBookmarks().then((result) => {
-                    setBookmarks(result.data);
+                    setBookmarkList(result.data);
                 }).catch((err) => {
                     console.log(err.message);
                 })
@@ -121,7 +122,7 @@ function SurahPage() {
                     </button>
                     {/* Tombol Bookmark */}
                     <button hidden={!isAuthenticated} id='lala' onClick={() => {
-                        if (bookmarks.some(bookmark => bookmark.verseKey === `${surahId}:${verse.id}`)) {
+                        if (bookmarkList.some(bookmark => bookmark.verseKey === `${surahId}:${verse.id}`)) {
                             unbookmark(`${surahId}:${verse.id}`);
                             console.log('Bookmark removed');
 
@@ -130,7 +131,7 @@ function SurahPage() {
                             console.log('Bookmark added');
                         }
                     }}>
-                        {bookmarks.some(bookmark => bookmark.verseKey === `${surahId}:${verse.id}`) ? "Unbookmark" : "Bookmark"}
+                        {bookmarkList.some(bookmark => bookmark.verseKey === `${surahId}:${verse.id}`) ? "Unbookmark" : "Bookmark"}
                     </button>
                 </div>
             ))}

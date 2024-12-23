@@ -211,13 +211,13 @@ app.get('/api/get_audio/:chapter_id/', async (req, res) => {
 })
 
 
-app.post('/api/audio_files/', async (req, res) => {
+app.post('/api/audio_files', async (req, res) => {
   const { verse_keys } = req.body;
   const base_url = "https://verses.quran.com/";
   const urls = [];
 
   verse_keys.forEach(async (verseKey) => {
-
+    console.log(verseKey);
     await axios.get(`https://api.quran.com/api/v4/quran/recitations/2?verse_key=${verseKey}`)
       .then((result) => {
         var audio_file = result.data.audio_files[0];

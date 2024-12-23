@@ -35,13 +35,14 @@ const BookmarkList = () => {
 
       // Ambil data audio
       axios
-        .post('http://localhost:5000/api/audio_files', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
+        .post('http://localhost:5000/api/audio_files/', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
         .then((response) => {
           const af = response.data.urls || [];
           setAudioFiles(af);
         })
         .catch((error) => {
-          console.error('Error fetching audio files:', error);
+          console.error('Error fetching audio files:', error.message);
+          setError('Terjadi kesalahan saat mengambil data audio.');
         });
     } else {
       setError('Harap login terlebih dahulu.');
@@ -73,7 +74,8 @@ const BookmarkList = () => {
         console.log('Bookmark removed');
       })
       .catch((error) => {
-        console.error('Error removing bookmark:', error);
+        console.error('Error removing bookmark:', error.message);
+        setError('Terjadi kesalahan saat mengambil data audio.');
       });
   };
 
@@ -84,26 +86,31 @@ const BookmarkList = () => {
       const result = await res.json();
       return `Surah ${result[chapter - 1].transliteration}, Ayat ${verse}`;
     } catch (err) {
-      console.error(err);
+      console.error(err.message);
       return undefined;
     }
   }
 
   const updateAudioFiles = async () => {
     await axios
-      .post('http://localhost:5000/api/audio_files', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
+      .post('http://localhost:5000/api/audio_files/', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
       .then((response) => {
         const af = response.data.urls || [];
         setAudioFiles(af);
       })
       .catch((error) => {
-        console.error('Error fetching audio files:', error);
+        console.error('Error fetching audio files:', error.message);
+        setError('Terjadi kesalahan saat mengambil data audio.');
       });
   }
 
   const playAudio = (verseKey) => {
     if (audioFiles.length !== bookmarkList.length || audioFiles.find((audio) => audio.verse_key === verseKey) === undefined) {
       updateAudioFiles();
+      if (audioFiles.length === 0) {
+        console.log('No audio files available');
+        return;
+      }
     }
     const audioUrl = audioFiles.find((audio) => audio.verse_key === verseKey)?.audio_url;
     console.log('Playing audio:', audioUrl);
@@ -149,46 +156,47 @@ const BookmarkList = () => {
       ) : (
         <ul>
           {bookmarkList.map((bookmark, index) => {
-            const audioUrl = getAudioUrlForBookmark(bookmark.verseKey);
             const chapterName = chapterNames[bookmark.verseKey];
             // Gabungkan verseKey dan index untuk memastikan key unik
             const uniqueKey = `${bookmark.verseKey}-${index}`;
 
             return (
-              <li key={uniqueKey}>
-                <strong>{chapterName || 'Nama Surah Tidak Tersedia'}</strong> -
-                {bookmark.text || 'Teks Ayat Tidak Tersedia'}
-
+              <li key={uniqueKey} style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ flex: 1 }}>
+                  <strong style={{ color: "white" }}>{chapterName || 'Nama Surah Tidak Tersedia'}</strong> -
+                  <div style={{ maxWidth: "800px", marginRight: "10%", marginLeft: "10%", fontSize: "26px", color: "white" }}>{bookmark.text || 'Teks Ayat Tidak Tersedia'}</div>
+                </div>
                 {/* Menambahkan elemen audio jika ada */}
-                <button id='lala' onClick={() => playAudio(bookmark.verseKey)}
-                  style={{
-                    marginTop: '10px',
-                    padding: '5px 10px',
-                    backgroundColor: '#f44336',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    backgroundColor: '#4CAF50',
-                  }}>
-                  Play Audio
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+                  <button
+                    id='lala'
+                    onClick={() => playAudio(bookmark.verseKey)}
+                    style={{
+                      padding: '5px 10px',
+                      backgroundColor: '#4CAF50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Play Audio
+                  </button>
 
-                {/* Tombol Unbookmark */}
-                <button
-                  onClick={() => handleUnbookmark(bookmark._id)}
-                  style={{
-                    marginTop: '10px',
-                    padding: '5px 10px',
-                    backgroundColor: '#f44336',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Unbookmark
-                </button>
+                  <button
+                    onClick={() => handleUnbookmark(bookmark._id)}
+                    style={{
+                      padding: '5px 10px',
+                      backgroundColor: '#f44336',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Unbookmark
+                  </button>
+                </div>
               </li>
             );
           })}
