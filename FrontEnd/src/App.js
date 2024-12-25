@@ -33,7 +33,7 @@ function App() {
     fetch("/assets/quran_id.json")
       .then((res) => {
         res.json().then((result) => {
-          setSurahList(result)
+          setSurahList(result);
         })
       }).catch((err) => {
         console.error(err)
@@ -51,7 +51,7 @@ function App() {
       <header>
         <nav className="navbar">
           <div className="navbar-brand">
-            <img id='logo' src="/images/logoq.png" alt="Logo" className="logo" />
+            <img id='logo' src="/images/logo512.png" alt="Logo" className="logo" />
             <span>Qur'an ku</span>
           </div>
 

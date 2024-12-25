@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'; // Untuk navigasi setelah login 
 import axios from 'axios'; // Untuk melakukan request ke API
 import '../styles/Login.css'; // Import CSS terpisah
 import { AuthContext } from '../context/AuthContext';
+import { BASE_URL } from '../services/api';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +15,7 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       // Mengirimkan request login ke backend API
-      const response = await axios.post('http://localhost:5000/api/login', {
+      const response = await axios.post(BASE_URL+'/api/login', {
         email,
         password,
       });

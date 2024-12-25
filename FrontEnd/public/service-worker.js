@@ -3,13 +3,24 @@ const urlsToCache = [
     "/",
     "/index.html",
     "/bookmarks.html",
-    "/BookmarList.js",
-    "/BookmarkPage.js",
+    '/service-worker.js',
+    "/src/pages/BookmarList.js",
+    "/src/pages/BookmarkPage.js",
+    "/src/pages/SurahList.js",
+    "/src/pages/SurahPage.js",
+    "/src/AddBookmark.js",
+    "/src/index.js",
+    "/src/serviceWorkerRegistration.js",
+    "/src/context/AuthContext.js",
+    "/src/context/BookmarkContext.js",
+    "/src/styles/App.css",
+    "/src/styles/Navbar.css",
     "/css/style.css",
     "/images/logo192.png",
     "/images/logo512.png",
     "/src/App.js",
     "/assets/quran_id.json",
+    "/manifest.json",
 ];
 
 // Install Service Worker
@@ -41,10 +52,24 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener('fetch', event => {
+    if (event.request.method !== 'GET') {
+        return; // Bypass caching for non-GET requests
+    }
     event.respondWith(
-        fetch(event.request).catch(() => {
-            return new Response('Network error occurred', {
-                status: 500
+        fetch(event.request).then((networkResponse) => {
+            // If the network request is successful, cache the response and return it
+            return caches.open(CACHE_NAME).then((cache) => {
+                cache.put(event.request, networkResponse.clone()); // Cache the new network response
+                return networkResponse;
+            });
+        }).catch(() => {
+            // If the network request fails, try to return the cached response
+            return caches.match(event.request).then((cachedResponse) => {
+                if (cachedResponse) {
+                    return cachedResponse; // Return the cached response if found
+                }
+                // Optionally, return a fallback page if the request is not in the cache
+                return caches.match('/index.html');
             });
         })
     );

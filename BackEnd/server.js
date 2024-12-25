@@ -6,13 +6,14 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-
+const fs = require('fs');
 const app = express();
+const https = require('https');
 const PORT = 5000;
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000', // Sesuaikan dengan URL frontend Anda
+  origin: '*',  // Sesuaikan dengan URL frontend Anda
   methods: ['GET', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -60,6 +61,7 @@ const authenticate = (req, res, next) => {
 
 // Endpoint untuk registrasi
 app.post('/api/register', async (req, res) => {
+  console.log(req.body);
   const { username, email, password } = req.body;
 
   // Validasi input
@@ -70,12 +72,14 @@ app.post('/api/register', async (req, res) => {
   // Cek apakah username sudah ada
   const existingUser = await User.findOne({ username });
   if (existingUser) {
+    console.log(existingUser);
     return res.status(400).json({ msg: 'Username sudah terdaftar' });
   }
 
   // Cek apakah email sudah ada
   const existingEmail = await User.findOne({ email });
   if (existingEmail) {
+    console.log(existingEmail);
     return res.status(400).json({ msg: 'Email sudah terdaftar' });
   }
 
@@ -234,7 +238,6 @@ app.post('/api/audio_files', async (req, res) => {
   })
 })
 
-// Pastikan server berjalan pada port 5000
 app.listen(5000, () => {
   console.log('Server running on port 5000');
 });

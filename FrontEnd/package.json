@@ -19,7 +19,8 @@
     "react-scripts": "^5.0.1"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3"
   },
   "browserslist": {
     "production": [

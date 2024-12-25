@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { BookmarkContext } from '../context/BookmarkContext';
+import { BASE_URL } from '../services/api';
 
 const BookmarkList = () => {
   // const [bookmarkList, setBookmarkList] = useState([]);
@@ -14,7 +15,7 @@ const BookmarkList = () => {
 
     if (token) {
       axios
-        .get('http://localhost:5000/api/bookmarks', {
+        .get(BASE_URL+'/api/bookmarks', {
           headers: { 'Authorization': `Bearer ${token}` },
         })
         .then((response) => {
@@ -35,7 +36,7 @@ const BookmarkList = () => {
 
       // Ambil data audio
       axios
-        .post('http://localhost:5000/api/audio_files/', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
+        .post(BASE_URL+'/api/audio_files/', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
         .then((response) => {
           const af = response.data.urls || [];
           setAudioFiles(af);
@@ -65,7 +66,7 @@ const BookmarkList = () => {
     localStorage.setItem('bookmarkList', JSON.stringify(updatedBookmarks));
     // Bisa juga mengirimkan request ke API untuk menghapus bookmark di backend
     axios
-      .delete(`http://localhost:5000/api/bookmarks/${_id}`, {
+      .delete(BASE_URL+`/api/bookmarks/${_id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
@@ -93,7 +94,7 @@ const BookmarkList = () => {
 
   const updateAudioFiles = async () => {
     await axios
-      .post('http://localhost:5000/api/audio_files/', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
+      .post(BASE_URL+'/api/audio_files/', { "verse_keys": bookmarkList.map(bookmark => bookmark.verseKey) })
       .then((response) => {
         const af = response.data.urls || [];
         setAudioFiles(af);

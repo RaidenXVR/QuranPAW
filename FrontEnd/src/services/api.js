@@ -1,7 +1,7 @@
 import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/bookmarks';
-const AUTH_URL = 'http://localhost:5000/api/auth';  // URL untuk auth
+export const BASE_URL = 'https://quranpaw.pagekite.me'
+const API_URL = BASE_URL + '/api/bookmarks';
+const AUTH_URL = BASE_URL + '/api/auth';  // URL untuk auth
 
 // Fungsi untuk mendapatkan token dari localStorage
 const getToken = () => {

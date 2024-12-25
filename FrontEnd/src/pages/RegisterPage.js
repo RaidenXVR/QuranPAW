@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Untuk navigasi setelah login berhasil
 import '../styles/Register.css'; // Import CSS terpisah
+import { BASE_URL } from '../services/api';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Hook untuk navigasi setelah login
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const userData = { username, email, password };
 
-    axios.post('http://localhost:5000/api/register', userData)
+    axios.post(BASE_URL+'/api/register', userData)
       .then(response => {
         console.log('User registered successfully', response.data);
+        navigate('/');
       })
       .catch(error => {
-        setError('Network error occurred');
-        console.error('Error during registration:', error);
+        setError(error.response.data.msg);
+        console.error('Error during registration:', error.response.data.msg);
       });
   };
 

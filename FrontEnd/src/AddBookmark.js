@@ -1,7 +1,7 @@
 // AddBookmark.js
 import React, { useState } from 'react';
 import axios from 'axios';
-
+import { BASE_URL } from './services/api';
 const AddBookmark = ({ onBookmarkAdded }) => {
     const [verseKey, setVerseKey] = useState('');
     const [text, setText] = useState('');
@@ -9,7 +9,7 @@ const AddBookmark = ({ onBookmarkAdded }) => {
     const [surahName, setSurahName] = useState('');
 
     const handleAddBookmark = () => {
-        axios.post('http://localhost:5000/api/bookmarks', { verseKey, text, translation, surahName })
+        axios.post(BASE_URL+'/api/bookmarks', { verseKey, text, translation, surahName })
             .then(response => {
                 console.log('Bookmark added:', response.data);
                 onBookmarkAdded(response.data); // Menambahkan bookmark ke state parent

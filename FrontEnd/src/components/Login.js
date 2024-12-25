@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import { BASE_URL } from '../services/api';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,7 +11,7 @@ const Login = () => {
     e.preventDefault();
     try {
       // Mengirim permintaan POST ke server untuk login
-      const response = await axios.post('http://localhost:5000/api/login', {
+      const response = await axios.post(BASE_URL + '/api/login', {
         email,
         password,
       });
@@ -24,6 +24,7 @@ const Login = () => {
       alert('Login berhasil!');
       navigate('/bookmarks'); // Redirect ke halaman bookmarks setelah login
     } catch (error) {
+      console.log(err.message)
       alert('Login gagal. Cek kembali email atau password Anda.');
     }
   };

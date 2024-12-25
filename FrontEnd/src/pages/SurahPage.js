@@ -6,6 +6,7 @@ import '../styles/Navbar.css';
 import { addBookmark, getBookmarks, deleteBookmark } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import { BookmarkContext } from '../context/BookmarkContext';
+import { BASE_URL } from '../services/api';
 
 function SurahPage() {
     const [currentSurah, setCurrentSurah] = useState("");
@@ -45,7 +46,7 @@ function SurahPage() {
             console.log(err.message)
         });
 
-        axios.get(`http://localhost:5000/api/get_audio/${surahId}?chapter_length=300`)
+        axios.get(BASE_URL + `/api/get_audio/${surahId}?chapter_length=300`)
             .then(response => {
                 setSurahAudio(response.data.urls || []);
             })
@@ -97,10 +98,11 @@ function SurahPage() {
             .then(() => {
                 getBookmarks().then((result) => {
                     setBookmarkList(result.data);
+                    console.log(result.data);
+                    console.log("Bookmark added successfully");
                 }).catch((err) => {
                     console.log(err.message);
                 })
-                // console.log('Bookmark added successfully');
             })
             .catch((error) => {
                 console.error('Error adding bookmark:', error);
@@ -128,7 +130,6 @@ function SurahPage() {
 
                         } else {
                             addToBookmark(verse.id, verse.text, verse.translation);
-                            console.log('Bookmark added');
                         }
                     }}>
                         {bookmarkList.some(bookmark => bookmark.verseKey === `${surahId}:${verse.id}`) ? "Unbookmark" : "Bookmark"}
